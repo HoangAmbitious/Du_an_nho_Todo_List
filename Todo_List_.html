@@ -5,6 +5,83 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Todo List</title>
   <link rel="stylesheet" href="Todo_List_.css">
+  <style>
+    body {
+  font-family: Arial, sans-serif;
+  margin: 40px;
+  background: #f4f6f8;
+}
+
+h1 {
+  text-align: center;
+  color: #333;
+}
+
+form {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+input {
+  padding: 10px;
+  width: 250px;
+  font-size: 16px;
+}
+
+button {
+  padding: 10px 15px;
+  background: #007bff;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+button:hover {
+  background: #0056b3;
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+  max-width: 400px;
+  margin: auto;
+}
+
+li {
+  background: white;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 6px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+li.completed span {
+  text-decoration: line-through;
+  color: gray;
+}
+
+li button {
+  margin-left: 5px;
+  font-size: 14px;
+  padding: 5px 8px;
+  border-radius: 4px;
+}
+
+.edit { background-color: #ffc107; }
+.delete { background-color: #dc3545; }
+.complete { background-color: #28a745; }
+
+.edit:hover { background-color: #e0a800; }
+.delete:hover { background-color: #c82333; }
+.complete:hover { background-color: #218838; }
+
+  </style>
 </head>
 <body>
   <h1>Todo List</h1>
@@ -16,6 +93,74 @@
 
   <ul id="todoList"></ul>
 
-  <script src="Todo_List_.js"></script>
+  <script>
+    let todos = [];
+let editingIndex = -1;
+
+const todoForm = document.getElementById("todoForm");
+const todoInput = document.getElementById("todoInput");
+const btnAdd = document.getElementById("btnAdd");
+const todoList = document.getElementById("todoList");
+
+// Render danh sách
+function renderTodos() {
+  todoList.innerHTML = "";
+  todos.forEach((todo, index) => {
+    const li = document.createElement("li");
+    li.className = todo.completed ? "completed" : "";
+
+    li.innerHTML = `
+      <span>${todo.text}</span>
+      <div>
+        <button class="complete">✓</button>
+        <button class="edit">Sửa</button>
+        <button class="delete">Xóa</button>
+      </div>
+    `;
+
+    // Hoàn thành
+    li.querySelector(".complete").addEventListener("click", () => {
+      todos[index].completed = !todos[index].completed;
+      renderTodos();
+    });
+
+    // Sửa
+    li.querySelector(".edit").addEventListener("click", () => {
+      todoInput.value = todo.text;
+      editingIndex = index;
+      btnAdd.textContent = "Cập nhật";
+    });
+
+    // Xóa
+    li.querySelector(".delete").addEventListener("click", () => {
+      todos.splice(index, 1);
+      renderTodos();
+    });
+
+    todoList.appendChild(li);
+  });
+}
+
+// Xử lý thêm hoặc cập nhật
+todoForm.addEventListener("submit", (e) => {
+  e.preventDefault();
+  const text = todoInput.value.trim();
+  if (text === "") return;
+
+  if (editingIndex === -1) {
+    // Thêm mới
+    todos.push({ text, completed: false });
+  } else {
+    // Cập nhật
+    todos[editingIndex].text = text;
+    editingIndex = -1;
+    btnAdd.textContent = "Thêm";
+  }
+
+  todoInput.value = "";
+  renderTodos();
+});
+
+  </script>
 </body>
 </html>
